@@ -151,7 +151,7 @@ class Pipeline:
             end_index = citation.end_index
             ref_ids = sorted([source.reference_id for source in citation.sources])
             all_ref_ids.extend(ref_ids)
-            ref_string = f"^[{', '.join(ref_ids)}]^"
+            ref_string = f"==[{', '.join(ref_ids)}]=="
             answer_text = answer_text[:end_index] + ref_string + answer_text[end_index:]
         
         # Add references after the footnotes
@@ -181,5 +181,6 @@ class Pipeline:
 
         answer, citations_list = self.add_references_to_answer(response.answer)
 
-        return answer
+        return answer + "\n\n" + "#### References:\n" + "\n".join(citations_list)
+"
         
