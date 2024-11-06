@@ -5,7 +5,7 @@ date: 2024-11-05
 version: 1.0
 license: Apache 2.0
 description: A pipeline for retrieving relevant information or summary answer from a Vertex AI Search App.
-requirements: vertexai, google-cloud-aiplatform, google-cloud-discoveryengine, google-api-core
+requirements: google-cloud-aiplatform, google-cloud-discoveryengine, google-api-core
 environment_variables: GOOGLE_PROJECT_ID, GOOGLE_CLOUD_REGION
 """
 
@@ -173,11 +173,6 @@ class Pipeline:
         print(messages)
         print(user_message)
 
-        response = self.answer_query(
-            project_id=self.valves.PROJECT_ID,
-            location=self.valves.LOCATION,
-            engine_id=self.valves.ENGINE_ID,
-            search_query=user_message,
-        )
+        response = self.answer_query(elf.valves.PROJECT_ID,self.valves.LOCATION,self.valves.ENGINE_ID,user_message)
 
         return self.add_references_to_answer(response)
