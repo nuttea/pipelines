@@ -48,6 +48,7 @@ class Pipeline:
         pass
     
     def answer_query(
+        self,
         project_id: str,
         location: str,
         engine_id: str,
@@ -126,7 +127,7 @@ class Pipeline:
 
         return response
     
-    def add_references_to_answer(answer):
+    def add_references_to_answer(self, answer):
         """
         Adds reference IDs to the answer text in Markdown format.
 
@@ -173,6 +174,6 @@ class Pipeline:
         print(messages)
         print(user_message)
 
-        response = self.answer_query(self.valves.PROJECT_ID,self.valves.LOCATION,self.valves.ENGINE_ID,user_message)
+        response = self.answer_query(project_id=self.valves.PROJECT_ID,location=self.valves.LOCATION,engine_id=self.valves.ENGINE_ID,search_query=user_message)
 
         return self.add_references_to_answer(response)
