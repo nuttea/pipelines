@@ -16,6 +16,7 @@ from pydantic import BaseModel
 
 from google.cloud import aiplatform
 from google.cloud import discoveryengine_v1 as discoveryengine
+from google.cloud import discoveryengine_v1alpha
 from google.api_core.client_options import ClientOptions
 
 class Pipeline:
@@ -174,6 +175,6 @@ class Pipeline:
         print(messages)
         print(user_message)
 
-        response = self.answer_query(project_id=self.valves.PROJECT_ID,location=self.valves.LOCATION,engine_id=self.valves.ENGINE_ID,search_query=user_message)
+        response = self.answer_query(project_id=self.valves.PROJECT_ID,location=self.valves.REGION,engine_id=self.valves.ENGINE_ID,search_query=user_message)
 
         return self.add_references_to_answer(response)
