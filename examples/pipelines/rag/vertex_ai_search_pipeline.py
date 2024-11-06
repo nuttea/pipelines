@@ -173,9 +173,6 @@ class Pipeline:
         model_id: str, 
         messages: List[dict], 
         body: dict,
-         __user__: Optional[dict] = None,
-        __event_emitter__: Callable[[dict], Awaitable[None]] = None,
-        __event_call__: Callable[[dict], Awaitable[dict]] = None,
         
     ) -> Union[str, Generator, Iterator]:
         # This is where you can add your custom RAG pipeline.
