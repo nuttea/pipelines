@@ -168,7 +168,7 @@ class Pipeline:
 
         return answer_text, citations_list
 
-    async def pipe(
+    def pipe(
         self, user_message: str, 
         model_id: str, 
         messages: List[dict], 
