@@ -184,38 +184,9 @@ class Pipeline:
         print(messages)
         print(user_message)
 
-        await __event_emitter__(
-                    {
-                        "type": "status",
-                        "data": {
-                            "status": "in_progress",
-                            "description": "Thinking...",
-                            "done": False
-                            },
-                    }
-                )
-
         response = self.answer_query(project_id=self.valves.PROJECT_ID,location=self.valves.REGION,engine_id=self.valves.ENGINE_ID,search_query=user_message)
 
         answer, citations_list = self.add_references_to_answer(response.answer)
 
-        for citation in citations_list:
-            await __event_emitter__(
-                        {
-                            "type": "message",
-                            "data": {"content": citation},
-                        }
-                    )
-
-        await __event_emitter__(
-                    {
-                        "type": "status",
-                        "data": {
-                            "status": "complete",
-                            "description": "Generated Answer",
-                            "done": False
-                            },
-                    }
-                )
-
-        return answer
+        return answer + "\n\n" + "\n".join(citations_list)
+        
