@@ -10,7 +10,7 @@ environment_variables: GOOGLE_PROJECT_ID, GOOGLE_CLOUD_REGION
 """
 
 import os
-from typing import List, Union, Generator, Iterator, Optional, Callable, Awaitable
+from typing import List, Union, Generator, Iterator
 
 from pydantic import BaseModel
 
@@ -182,5 +182,3 @@ class Pipeline:
         answer, citations_list = self.add_references_to_answer(response.answer)
 
         return answer + "\n\n" + "#### References:\n" + "\n".join(citations_list)
-"
-        
