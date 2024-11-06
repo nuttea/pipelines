@@ -173,6 +173,6 @@ class Pipeline:
         print(messages)
         print(user_message)
 
-        response = self.answer_query(elf.valves.PROJECT_ID,self.valves.LOCATION,self.valves.ENGINE_ID,user_message)
+        response = self.answer_query(self.valves.PROJECT_ID,self.valves.LOCATION,self.valves.ENGINE_ID,user_message)
 
         return self.add_references_to_answer(response)
