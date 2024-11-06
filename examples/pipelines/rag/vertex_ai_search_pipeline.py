@@ -10,7 +10,7 @@ environment_variables: GOOGLE_PROJECT_ID, GOOGLE_CLOUD_REGION
 """
 
 import os
-from typing import List, Union, Generator, Iterator
+from typing import List, Union, Generator, Iterator, Optional, Callable, Awaitable
 
 from pydantic import BaseModel
 
@@ -152,22 +152,31 @@ class Pipeline:
             end_index = citation.end_index
             ref_ids = sorted([source.reference_id for source in citation.sources])
             all_ref_ids.extend(ref_ids)
-            ref_string = f"<sup>[{', '.join(ref_ids)}]</sup>"
+            ref_string = f"^[{', '.join(ref_ids)}]^"
             answer_text = answer_text[:end_index] + ref_string + answer_text[end_index:]
             answer_text += "\n\n"
         
         # Add references after the footnotes
         answer_text += "References:\n"
         distinct_ref_ids = sorted(list(set(all_ref_ids)))
+        citations_list = []
         for ref_id in distinct_ref_ids:
             title = references[int(ref_id)].chunk_info.document_metadata.title
             uri = references[int(ref_id)].chunk_info.document_metadata.uri
-            answer_text += f"- [{ref_id}]: [{title}]({uri})\n"
+            citations_list.append(f"=={ref_id}== [{title}]({uri})")
+            #answer_text += f"- [{ref_id}]: [{title}]({uri})\n"
 
-        return answer_text
+        return answer_text, citations_list
 
-    def pipe(
-        self, user_message: str, model_id: str, messages: List[dict], body: dict
+    async def pipe(
+        self, user_message: str, 
+        model_id: str, 
+        messages: List[dict], 
+        body: dict,
+         __user__: Optional[dict] = None,
+        __event_emitter__: Callable[[dict], Awaitable[None]] = None,
+        __event_call__: Callable[[dict], Awaitable[dict]] = None,
+        
     ) -> Union[str, Generator, Iterator]:
         # This is where you can add your custom RAG pipeline.
         # Typically, you would retrieve relevant information from your knowledge base and synthesize it to generate a response.
@@ -175,6 +184,38 @@ class Pipeline:
         print(messages)
         print(user_message)
 
+        await __event_emitter__(
+                    {
+                        "type": "status",
+                        "data": {
+                            "status": "in_progress",
+                            "description": "Thinking...",
+                            "done": False
+                            },
+                    }
+                )
+
         response = self.answer_query(project_id=self.valves.PROJECT_ID,location=self.valves.REGION,engine_id=self.valves.ENGINE_ID,search_query=user_message)
 
-        return self.add_references_to_answer(response.answer)
+        answer, citations_list = self.add_references_to_answer(response.answer)
+
+        for citation in citations_list:
+            await __event_emitter__(
+                        {
+                            "type": "message",
+                            "data": {"content": citation},
+                        }
+                    )
+
+        await __event_emitter__(
+                    {
+                        "type": "status",
+                        "data": {
+                            "status": "complete",
+                            "description": "Generated Answer",
+                            "done": False
+                            },
+                    }
+                )
+
+        return answer
