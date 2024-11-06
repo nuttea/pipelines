@@ -16,7 +16,6 @@ from pydantic import BaseModel
 
 from google.cloud import aiplatform
 from google.cloud import discoveryengine_v1 as discoveryengine
-from google.cloud import discoveryengine_v1alpha
 from google.api_core.client_options import ClientOptions
 
 class Pipeline:
@@ -154,17 +153,14 @@ class Pipeline:
             all_ref_ids.extend(ref_ids)
             ref_string = f"^[{', '.join(ref_ids)}]^"
             answer_text = answer_text[:end_index] + ref_string + answer_text[end_index:]
-            answer_text += "\n\n"
         
         # Add references after the footnotes
-        answer_text += "References:\n"
         distinct_ref_ids = sorted(list(set(all_ref_ids)))
         citations_list = []
         for ref_id in distinct_ref_ids:
             title = references[int(ref_id)].chunk_info.document_metadata.title
             uri = references[int(ref_id)].chunk_info.document_metadata.uri
             citations_list.append(f"=={ref_id}== [{title}]({uri})")
-            #answer_text += f"- [{ref_id}]: [{title}]({uri})\n"
 
         return answer_text, citations_list
 
@@ -185,5 +181,5 @@ class Pipeline:
 
         answer, citations_list = self.add_references_to_answer(response.answer)
 
-        return answer + "\n\n" + "\n".join(citations_list)
+        return answer
         
