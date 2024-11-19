@@ -10,7 +10,9 @@ environment_variables: GOOGLE_PROJECT_ID, GOOGLE_CLOUD_REGION
 """
 
 import os
-from typing import List, Union, Generator, Iterator
+import uuid
+from typing import List, Union, Generator, Iterator, Optional
+from pprint import pprint
 
 from pydantic import BaseModel, Field
 import urllib.parse
@@ -32,14 +34,19 @@ from vertexai.generative_models import (
 class Pipeline:
 
     class Valves(BaseModel):
+        priority: int = Field(
+            default=100, description="Priority level for the filter operations."
+        )
         PROJECT_ID: str
         REGION: str
         LOCATION: str
         ENGINE_ID: str
 
     def __init__(self):
+        self.name = "Vertex AI Search Pipeline"
         self.documents = None
         self.index = None
+        self.debug = True
 
         self.valves = self.Valves(
             **{
@@ -76,6 +83,30 @@ class Pipeline:
             project=self.valves.PROJECT_ID,
             location=self.valves.LOCATION,
         )
+    
+    async def inlet(self, body: dict, user: Optional[dict] = None) -> dict:
+        # This function is called before the OpenAI API request is made. You can modify the form data before it is sent to the OpenAI API.
+        # Check for presence of required keys and generate chat_id if missing
+        if "chat_id" not in body:
+            unique_id = f"SYSTEM MESSAGE {uuid.uuid4()}"
+            body["chat_id"] = unique_id
+            print(f"chat_id was missing, set to: {unique_id}")
+        if self.debug:
+            print(f"inlet: {__name__} - body:")
+            pprint(body)
+            print(f"inlet: {__name__} - user:")
+            pprint(user)
+        return body
+
+    async def outlet(self, body: dict, user: Optional[dict] = None) -> dict:
+        # This function is called after the OpenAI API response is completed. You can modify the messages after they are received from the OpenAI API.
+        print(f"outlet: {__name__}")
+        if self.debug:
+            print(f"outlet: {__name__} - body:")
+            pprint(body)
+            print(f"outlet: {__name__} - user:")
+            pprint(user)
+        return body
     
     def search(
         self,
@@ -122,6 +153,7 @@ class Pipeline:
                     version="gemini-1.5-flash-002/answer_gen/v1",
                 ),
             ),
+            
         )
 
         # Refer to the `SearchRequest` reference for all supported fields:
@@ -322,16 +354,14 @@ class Pipeline:
         
     ) -> Union[str, Generator, Iterator]:
         # This is where you can add your custom RAG pipeline.
-        # Typically, you would retrieve relevant information from your knowledge base and synthesize it to generate a response.
-
-        #print("## TASK ##")
-        #print(__task__)
-        #print("## BODY ##")
-        #print(body)
-        #print("## MESSAGES ##")
-        #print(messages)
-        #print("## USER MESSAGE ##")
-        #print(user_message)
+        if self.debug:
+            print(f"pipe: {__name__} - received message from user: {user_message}")
+            print("## BODY ##")
+            print(body)
+            print("## MESSAGES ##")
+            print(messages)
+            print("## USER MESSAGE ##")
+            print(user_message)
 
         # If you'd like to check for title generation, you can add the following check
         if user_message.startswith("Create a concise, 3-5 word title") and body.get("max_tokens") == 50:
