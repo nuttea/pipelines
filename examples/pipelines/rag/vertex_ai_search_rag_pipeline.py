@@ -156,9 +156,6 @@ class Pipeline:
             query=search_query,
             page_size=20,
             content_search_spec=content_search_spec,
-            query_expansion_spec=discoveryengine.SearchRequest.QueryExpansionSpec(
-                condition=discoveryengine.SearchRequest.QueryExpansionSpec.Condition.AUTO,
-            ),
             spell_correction_spec=discoveryengine.SearchRequest.SpellCorrectionSpec(
                 mode=discoveryengine.SearchRequest.SpellCorrectionSpec.Mode.AUTO
             ),
