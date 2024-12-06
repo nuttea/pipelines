@@ -60,6 +60,7 @@ class Pipeline:
         LOCATION: str = ""
         ENGINE_ID: str = ""
         PERSONA: str = ""
+        MAX_REFERENCE: int = 3
 
     def __init__(self):
         self.type = "manifold"
@@ -126,7 +127,8 @@ class Pipeline:
                 system_instruction=system_message,
             )
 
-            if body.get("title", False):  # If chat title generation is requested
+            # If you'd like to check for title generation, you can add the following check
+            if user_message.startswith("Create a concise, 3-5 word title") and body.get("max_tokens") == 50:
                 return self.title_generation(body, user_message)
             else:
                 contents = self.build_conversation_history(messages)
@@ -297,35 +299,8 @@ class Pipeline:
             context += "Title: " + result.chunk.document_metadata.title + "\n"
             context += "Relevance Score: " + str(result.chunk.relevance_score) + "\n"
             context += "Content: " + result.chunk.content + "\n\n"
-            citations_list += f"> [{i+1}] - Page {result.chunk.page_span.page_start}-{result.chunk.page_span.page_end} - [{result.chunk.document_metadata.title}]({result.chunk.document_metadata.uri})\n\n"
+            if i < self.valves.MAX_REFERENCE:
+                citations_list += f"> [{i+1}] - Page {result.chunk.page_span.page_start}-{result.chunk.page_span.page_end} - [{result.chunk.document_metadata.title}]({result.chunk.document_metadata.uri})\n\n"
         context += "</CONTEXT>"
 
         return context, citations_list
-
-    def rag_query(
-        self,
-        search_query: str,
-        persona: str,
-        prompt_template: str,
-        llm: GenerativeModel,
-    ):
-        results_chunks = retriever(
-            PROJECT_ID,
-            REGION,
-            ENGINE_ID,
-            SEARCH_QUERY,
-        )
-
-        context, citations_list = parse_results(results_chunks.results)
-
-        prompt = prompt_template.format(
-            persona=persona,
-            context=context,
-            search_query=search_query,
-        )
-
-        response = llm.generate_content(
-            [prompt],
-        )
-
-        return response.text
