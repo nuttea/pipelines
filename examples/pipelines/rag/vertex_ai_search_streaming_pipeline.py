@@ -47,7 +47,7 @@ class Pipeline:
         ENGINE_ID: str
 
     def __init__(self):
-        self.name = "Vertex AI Search Pipeline"
+        self.name = "Vertex AI Streaming Answer"
         self.documents = None
         self.index = None
         self.debug = True
@@ -153,8 +153,8 @@ class Pipeline:
                     text = decoder.decode(chunk, final=False)  # Decode with final=False
                     response += text
                     if text.startswith('    "answerText":'):
-                        res = text.split('"')[3]
-                        print(res)
+                        res = text.split('"')[3].replace("\\n", "\n")
+                        print("AnswerText:" + res)
                         yield res
                 except UnicodeDecodeError:
                     # Incomplete data, keep accumulating in the buffer
@@ -207,10 +207,6 @@ class Pipeline:
             )
 
             return response.text
-
-        # Streaming Answer Query
-        return self.stream_answer_response(user_message, self.url)
-        
-        # Answer Query
-        #response = self.answer_query(project_id=self.valves.PROJECT_ID,location=self.valves.REGION,engine_id=self.valves.ENGINE_ID,search_query=user_message)
-        #answer, citations_list = self.add_references_to_answer(response.answer)
+        else:
+            # Streaming Answer Query
+            return self.stream_answer_response(user_message, self.url)
