@@ -49,15 +49,6 @@ class Pipeline:
         self.index = None
         self.debug = True
 
-        self.valves = self.Valves(
-            **{
-                "PROJECT_ID": os.getenv("PROJECT_ID", ""),
-                "REGION": os.getenv("REGION", ""),
-                "LOCATION": os.getenv("LOCATION", ""),
-                "ENGINE_ID": os.getenv("ENGINE_ID", ""),
-            }
-        )
-
     async def on_startup(self):
         # This function is called when the server is started.
         vertexai.init(
