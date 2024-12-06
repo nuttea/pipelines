@@ -208,7 +208,7 @@ class Pipeline:
         query_understanding_spec = discoveryengine.AnswerQueryRequest.QueryUnderstandingSpec(
             query_rephraser_spec=discoveryengine.AnswerQueryRequest.QueryUnderstandingSpec.QueryRephraserSpec(
                 disable=False,  # Optional: Disable query rephraser
-                max_rephrase_steps=1,  # Optional: Number of rephrase steps
+                max_rephrase_steps=3,  # Optional: Number of rephrase steps
             ),
             # Optional: Classify query types
             query_classification_spec=discoveryengine.AnswerQueryRequest.QueryUnderstandingSpec.QueryClassificationSpec(
@@ -229,7 +229,7 @@ class Pipeline:
                 model_version="gemini-1.5-flash-002/answer_gen/v1"
             ),
             prompt_spec=discoveryengine.AnswerQueryRequest.AnswerGenerationSpec.PromptSpec(
-                preamble="""Given the conversation between a user and a helpful assistant and some search results, create a final answer for the assistant. The answer should use all relevant information from the search results, not introduce any additional information, and use exactly the same words as the search results when possible. The assistant's answer should be no more than 30 sentences. The assistant's answer should be main topic with transaction code and follow by step-by-step instructions formatted as a bulleted list. Each list item should start with the "-" symbol."""
+                preamble=self.valves.PREAMBLE
             ),
         )
 
@@ -381,11 +381,11 @@ class Pipeline:
 
         # Search Question
         # Search Query
-        response = self.search(project_id=self.valves.PROJECT_ID,location=self.valves.REGION,engine_id=self.valves.ENGINE_ID,search_query=user_message)
-        answer, citations_list = self.add_references_to_summary(response.summary)
+        #response = self.search(project_id=self.valves.PROJECT_ID,location=self.valves.REGION,engine_id=self.valves.ENGINE_ID,search_query=user_message)
+        #answer, citations_list = self.add_references_to_summary(response.summary)
 
         # Answer Query
-        #response = self.answer_query(project_id=self.valves.PROJECT_ID,location=self.valves.REGION,engine_id=self.valves.ENGINE_ID,search_query=user_message)
-        #answer, citations_list = self.add_references_to_answer(response.answer)
+        response = self.answer_query(project_id=self.valves.PROJECT_ID,location=self.valves.REGION,engine_id=self.valves.ENGINE_ID,search_query=user_message)
+        answer, citations_list = self.add_references_to_answer(response.answer)
 
         return answer + "\n\n" + "> ##### References:\n" + "\n".join(citations_list)
