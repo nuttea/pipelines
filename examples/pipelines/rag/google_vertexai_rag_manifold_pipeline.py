@@ -14,7 +14,7 @@ usage_instructions:
 """
 
 import os
-from typing import Iterator, List, Union
+from typing import Iterator, List, Union, Optional
 
 import vertexai
 from pydantic import BaseModel, Field
