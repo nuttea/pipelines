@@ -14,7 +14,9 @@ usage_instructions:
 """
 
 import os
-from typing import Iterator, List, Union, Optional
+import uuid
+from typing import List, Union, Generator, Iterator, Optional
+from pprint import pprint
 
 import vertexai
 from pydantic import BaseModel, Field
@@ -103,21 +105,6 @@ class Pipeline:
             unique_id = f"SYSTEM MESSAGE {uuid.uuid4()}"
             body["chat_id"] = unique_id
             print(f"chat_id was missing, set to: {unique_id}")
-        if self.debug:
-            print(f"inlet: {__name__} - body:")
-            pprint(body)
-            print(f"inlet: {__name__} - user:")
-            pprint(user)
-        return body
-
-    async def outlet(self, body: dict, user: Optional[dict] = None) -> dict:
-        # This function is called after the OpenAI API response is completed. You can modify the messages after they are received from the OpenAI API.
-        print(f"outlet: {__name__}")
-        if self.debug:
-            print(f"outlet: {__name__} - body:")
-            pprint(body)
-            print(f"outlet: {__name__} - user:")
-            pprint(user)
         return body
 
     def pipe(
