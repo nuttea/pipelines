@@ -34,7 +34,7 @@ from vertexai.generative_models import (
 PROMPT_TEMPLATE = """Given the conversation between a user and a helpful assistant and some search results, create a final answer for the assistant.
 The answer should use all relevant information from the search results, not introduce any additional information, and use exactly the same words as the search results when possible. 
 The assistant's answer should be no more than 30 sentences.
-The assistant's answer should be main topic with transaction code and follow by step-by-step instructions formatted as a bulleted list.
+The assistant's answer should be main topic or query details and follow by step-by-step instructions formatted as a bulleted list.
 Each list item should start with the "-" symbol.
 
 Build the answer specificly to the user persona:
