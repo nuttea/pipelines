@@ -1,11 +1,11 @@
 """
-title: Google GenAI (Vertex AI) Manifold Pipeline
-author: Hiromasa Kakehashi
-date: 2024-09-19
+title: Google GenAI (Vertex AI) RAG Manifold Pipeline
+author: Hiromasa Kakehashi, Nuttee Jirattivongvibul
+date: 2024-12-12
 version: 1.0
 license: MIT
 description: A pipeline for generating text using Google's GenAI models in Open-WebUI.
-requirements: vertexai
+requirements: vertexai, google-cloud-aiplatform, google-cloud-discoveryengine
 environment_variables: GOOGLE_PROJECT_ID, GOOGLE_CLOUD_REGION
 usage_instructions:
   To use Gemini with the Vertex AI API, a service account with the appropriate role (e.g., `roles/aiplatform.user`) is required.
