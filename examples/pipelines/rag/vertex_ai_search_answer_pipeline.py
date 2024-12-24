@@ -82,26 +82,6 @@ class Pipeline:
             location=self.valves.LOCATION,
         )
     
-    async def inlet(self, body: dict, user: Optional[dict] = None) -> dict:
-        # This function is called before the OpenAI API request is made. You can modify the form data before it is sent to the OpenAI API.
-        print(f"inlet: {__name__}")
-        if self.debug:
-            print(f"inlet: {__name__} - body:")
-            pprint(body)
-            print(f"inlet: {__name__} - user:")
-            pprint(user)
-        return body
-
-    async def outlet(self, body: dict, user: Optional[dict] = None) -> dict:
-        # This function is called after the OpenAI API response is completed. You can modify the messages after they are received from the OpenAI API.
-        print(f"outlet: {__name__}")
-        if self.debug:
-            print(f"outlet: {__name__} - body:")
-            pprint(body)
-            print(f"outlet: {__name__} - user:")
-            pprint(user)
-        return body
-    
     def answer(
         project_id: str,
         location: str,
@@ -330,6 +310,7 @@ class Pipeline:
         if body["session"] is None:
             body["session"] = response.session.name
         
-        answer, citations_list = self.add_references_to_answer(response.answer)
+        #answer, citations_list = self.add_references_to_answer(response.answer)
+        #return answer + "\n\n" + "> ##### References:\n" + "\n".join(citations_list)
 
-        return answer + "\n\n" + "> ##### References:\n" + "\n".join(citations_list)
+        return response.answer.answer_text
