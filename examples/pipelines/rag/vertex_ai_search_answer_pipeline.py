@@ -61,10 +61,6 @@ class Pipeline:
 
     async def on_startup(self):
         # This function is called when the server is started.
-        aiplatform.init(
-            project=self.valves.PROJECT_ID,
-            location=self.valves.LOCATION
-        )
         vertexai.init(
             project=self.valves.PROJECT_ID,
             location=self.valves.LOCATION,
@@ -83,6 +79,7 @@ class Pipeline:
         )
     
     def answer(
+        self,
         project_id: str,
         location: str,
         engine_id: str,
@@ -200,7 +197,7 @@ class Pipeline:
 
         return response
     
-    def add_references_to_answer(answer):
+    def add_references_to_answer(self, answer):
         """
         Adds reference IDs to the answer text in Markdown format.
 
